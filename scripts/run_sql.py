@@ -43,7 +43,9 @@ if __name__ == "__main__":
     else:
         with open("acceptance-test-study.sql") as f:
             sql = f.read()
-            sql = sql.replace("_view", "_slice")
+            sql = sql.replace("patient_view", "patient25slice")
+            sql = sql.replace("observation_view", "observation25slice")
+            sql = sql.replace("medication_view", "medication25slice")
     conn = get_conn()
     cur = conn.cursor()
     import re
@@ -60,16 +62,18 @@ if __name__ == "__main__":
         for i, line in enumerate(statement.split("\n"), start=1):
             print("{:>3}: {}".format(i, line))
         cur.execute(statement)
-        # cur.fetchall()
+        cur.fetchone()
 
     print("-" * 80)
     statement = statements[-1]
     for i, line in enumerate(statement.split("\n"), start=1):
         print("{:>3}: {}".format(i, line))
-    print("-" * 80)
+    print("-" * 60)
     data = get_data(conn, statement)
     # print(len(data))
     with open("/tmp/data.csv", "w") as csvfile:
         writer = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
         writer.writerows(data)
+    # XXX delete the temporary tables if necessary
+
     # print(tabulate(data))

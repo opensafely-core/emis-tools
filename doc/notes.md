@@ -46,8 +46,5 @@ Build and push it with:
 
 Then on the server, run it with:
 
-    docker run --env TOKEN=ti62Bti0LgRyl59kQvZ3 --env USER=sebastian.bacon docker.opensafely.org/emis-scripts python run_sql.py
-
-
-
+    docker pull docker.opensafely.org/emis-scripts && time docker run --env TOKEN=1RmcPqwGN3yQp2SfDJ8v --env USER=sebastian.bacon -v $(pwd):/tmp docker.opensafely.org/emis-scripts python run_sql.py
 
