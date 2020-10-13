@@ -79,36 +79,36 @@
 
 
 -- Query for died_ons_covid_flag_any
--- CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_ons_covid_flag_any AS
---             SELECT
---                 registration_id as patient_id,
---                 hashed_organisation,
---                 1 AS died
---             FROM ons_view
---             WHERE (icd10u IN ('U071','U072') OR icd10001 IN ('U071','U072') OR icd10002 IN ('U071','U072') OR icd10003 IN ('U071','U072') OR icd10004 IN ('U071','U072') OR icd10005 IN ('U071','U072') OR icd10006 IN ('U071','U072') OR icd10007 IN ('U071','U072') OR icd10008 IN ('U071','U072') OR icd10009 IN ('U071','U072') OR icd10010 IN ('U071','U072') OR icd10011 IN ('U071','U072') OR icd10012 IN ('U071','U072') OR icd10013 IN ('U071','U072') OR icd10014 IN ('U071','U072') OR icd10015 IN ('U071','U072')) AND dod <= DATE('2020-06-01')
---             ;
+CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_ons_covid_flag_any AS
+            SELECT
+                registration_id as patient_id,
+                hashed_organisation,
+                1 AS died
+            FROM ons_view
+            WHERE (icd10u IN ('U071','U072') OR icd10001 IN ('U071','U072') OR icd10002 IN ('U071','U072') OR icd10003 IN ('U071','U072') OR icd10004 IN ('U071','U072') OR icd10005 IN ('U071','U072') OR icd10006 IN ('U071','U072') OR icd10007 IN ('U071','U072') OR icd10008 IN ('U071','U072') OR icd10009 IN ('U071','U072') OR icd10010 IN ('U071','U072') OR icd10011 IN ('U071','U072') OR icd10012 IN ('U071','U072') OR icd10013 IN ('U071','U072') OR icd10014 IN ('U071','U072') OR icd10015 IN ('U071','U072')) AND dod <= DATE('2020-06-01')
+            ;
 
 
--- -- Query for died_ons_covid_flag_underlying
--- CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_ons_covid_flag_underlying AS
---             SELECT
---                 registration_id as patient_id,
---                 hashed_organisation,
---                 1 AS died
---             FROM ons_view
---             WHERE (icd10u IN ('U071','U072')) AND dod <= DATE('2020-06-01')
---             ;
+-- Query for died_ons_covid_flag_underlying
+CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_ons_covid_flag_underlying AS
+            SELECT
+                registration_id as patient_id,
+                hashed_organisation,
+                1 AS died
+            FROM ons_view
+            WHERE (icd10u IN ('U071','U072')) AND dod <= DATE('2020-06-01')
+            ;
 
 
--- -- Query for died_date_ons
--- CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_date_ons AS
---             SELECT
---                 registration_id as patient_id,
---                 hashed_organisation,
---                 dod AS date_of_death
---             FROM ons_view
---             WHERE (1 = 1) AND dod <= DATE('2020-06-01')
---             ;
+-- Query for died_date_ons
+CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_date_ons AS
+            SELECT
+                registration_id as patient_id,
+                hashed_organisation,
+                dod AS date_of_death
+            FROM ons_view
+            WHERE (1 = 1) AND dod <= DATE('2020-06-01')
+            ;
 
 
 -- Query for age
@@ -369,9 +369,9 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_population AS
           _TABLE_PREFIX_population.patient_id AS patient_id,
           -- COALESCE(date_format(_TABLE_PREFIX_icu_date_admitted.first_admitted_date, '%Y-%m-%d'), '') AS icu_date_admitted,
           -- COALESCE(date_format(_TABLE_PREFIX_died_date_cpns.date_of_death, '%Y-%m-%d'), '') AS died_date_cpns,
-          -- COALESCE(_TABLE_PREFIX_died_ons_covid_flag_any.died, 0) AS died_ons_covid_flag_any,
-          -- COALESCE(_TABLE_PREFIX_died_ons_covid_flag_underlying.died, 0) AS died_ons_covid_flag_underlying,
-          -- COALESCE(date_format(_TABLE_PREFIX_died_date_ons.date_of_death, '%Y-%m-%d'), '') AS died_date_ons,
+          COALESCE(_TABLE_PREFIX_died_ons_covid_flag_any.died, 0) AS died_ons_covid_flag_any,
+          COALESCE(_TABLE_PREFIX_died_ons_covid_flag_underlying.died, 0) AS died_ons_covid_flag_underlying,
+          COALESCE(date_format(_TABLE_PREFIX_died_date_ons.date_of_death, '%Y-%m-%d'), '') AS died_date_ons,
           COALESCE(_TABLE_PREFIX_age.age, 0) AS age,
           COALESCE(_TABLE_PREFIX_sex.sex, '') AS sex,
           COALESCE(_TABLE_PREFIX_imd.index_of_multiple_deprivation, 0) AS imd,
@@ -390,9 +390,9 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_population AS
           _TABLE_PREFIX_population
           -- LEFT JOIN _TABLE_PREFIX_icu_date_admitted ON _TABLE_PREFIX_icu_date_admitted.patient_id = _TABLE_PREFIX_population.patient_id
           -- LEFT JOIN _TABLE_PREFIX_died_date_cpns ON _TABLE_PREFIX_died_date_cpns.patient_id = _TABLE_PREFIX_population.patient_id
-          -- LEFT JOIN _TABLE_PREFIX_died_ons_covid_flag_any ON _TABLE_PREFIX_died_ons_covid_flag_any.patient_id = _TABLE_PREFIX_population.patient_id
-          -- LEFT JOIN _TABLE_PREFIX_died_ons_covid_flag_underlying ON _TABLE_PREFIX_died_ons_covid_flag_underlying.patient_id = _TABLE_PREFIX_population.patient_id
-          -- LEFT JOIN _TABLE_PREFIX_died_date_ons ON _TABLE_PREFIX_died_date_ons.patient_id = _TABLE_PREFIX_population.patient_id
+          LEFT JOIN _TABLE_PREFIX_died_ons_covid_flag_any ON _TABLE_PREFIX_died_ons_covid_flag_any.patient_id = _TABLE_PREFIX_population.patient_id
+          LEFT JOIN _TABLE_PREFIX_died_ons_covid_flag_underlying ON _TABLE_PREFIX_died_ons_covid_flag_underlying.patient_id = _TABLE_PREFIX_population.patient_id
+          LEFT JOIN _TABLE_PREFIX_died_date_ons ON _TABLE_PREFIX_died_date_ons.patient_id = _TABLE_PREFIX_population.patient_id
           LEFT JOIN _TABLE_PREFIX_age ON _TABLE_PREFIX_age.patient_id = _TABLE_PREFIX_population.patient_id
           LEFT JOIN _TABLE_PREFIX_sex ON _TABLE_PREFIX_sex.patient_id = _TABLE_PREFIX_population.patient_id
           LEFT JOIN _TABLE_PREFIX_imd ON _TABLE_PREFIX_imd.patient_id = _TABLE_PREFIX_population.patient_id
