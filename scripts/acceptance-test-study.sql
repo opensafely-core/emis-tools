@@ -77,8 +77,6 @@
 --             GROUP BY registration_id, hashed_organisation
 --             ;
 
-DROP TABLE IF EXISTS _TABLE_PREFIX_died_ons_covid_flag_any;
-
 -- Query for died_ons_covid_flag_any
 CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_ons_covid_flag_any AS
             SELECT
@@ -88,8 +86,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_ons_covid_flag_any AS
             FROM ons_raw_view
             WHERE (icd10u IN ('U071','U072') OR icd10001 IN ('U071','U072') OR icd10002 IN ('U071','U072') OR icd10003 IN ('U071','U072') OR icd10004 IN ('U071','U072') OR icd10005 IN ('U071','U072') OR icd10006 IN ('U071','U072') OR icd10007 IN ('U071','U072') OR icd10008 IN ('U071','U072') OR icd10009 IN ('U071','U072') OR icd10010 IN ('U071','U072') OR icd10011 IN ('U071','U072') OR icd10012 IN ('U071','U072') OR icd10013 IN ('U071','U072') OR icd10014 IN ('U071','U072') OR icd10015 IN ('U071','U072')) AND reg_stat_dod <= 20200601
             ;
-
-DROP TABLE IF EXISTS _TABLE_PREFIX_died_ons_covid_flag_underlying;
 
 -- Query for died_ons_covid_flag_underlying
 CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_ons_covid_flag_underlying AS
@@ -101,8 +97,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_ons_covid_flag_underlying AS
             WHERE (icd10u IN ('U071','U072')) AND reg_stat_dod <= 20200601
             ;
 
-
-DROP TABLE IF EXISTS _TABLE_PREFIX_died_date_ons;
 
 -- Query for died_date_ons
 CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_died_date_ons AS
