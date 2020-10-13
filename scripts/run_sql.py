@@ -43,9 +43,9 @@ if __name__ == "__main__":
     else:
         with open("acceptance-test-study.sql") as f:
             sql = f.read()
-            sql = sql.replace("patient_view", "patient25slice")
-            sql = sql.replace("observation_view", "observation25slice")
-            sql = sql.replace("medication_view", "medication25slice")
+            sql = sql.replace("patient_view", "patient_500_slice")
+            sql = sql.replace("observation_view", "observation_500_slice")
+            sql = sql.replace("medication_view", "medication_500_slice")
     conn = get_conn()
     cur = conn.cursor()
     import re
