@@ -43,6 +43,7 @@ if __name__ == "__main__":
     else:
         with open("acceptance-test-study.sql") as f:
             sql = f.read()
+            sql = sql.replace("TABLE_PREFIX", os.environ["TABLE_PREFIX"])
             sql = sql.replace("patient_view", "patient_500_slice")
             sql = sql.replace("observation_view", "observation_500_slice")
             sql = sql.replace("medication_view", "medication_500_slice")
