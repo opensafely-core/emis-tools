@@ -30,37 +30,36 @@
                     ) AS t (code)
                     ;
 
-
--- -- Query for icu_date_admitted
+-- Query for icu_date_admitted
 CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_icu_date_admitted AS
             SELECT
-              registration_id AS patient_id,
+              substr(backup_hash, 3) AS nhs_no,
               hashed_organisation,
 
         MIN(
         CASE
         WHEN
-          COALESCE(date_format(icuadmissiondatetime, '%Y-%m-%d'), '9999-01-01') < COALESCE(date_format(originalicuadmissiondate, '%Y-%m-%d'), '9999-01-01')
+          COALESCE(date_parse(daicu_taicu, '%d/%m/%Y %H:%i'), date_parse('9999', '%Y')) < COALESCE(date_parse(doaicu, '%d/%m/%Y'), date_parse('9999', '%Y'))
         THEN
-          DATE(icuadmissiondatetime)
+          DATE(date_parse(daicu_taicu, '%d/%m/%Y %H:%i'))
         ELSE
-          DATE(originalicuadmissiondate)
+          DATE(date_parse(doaicu, '%d/%m/%Y'))
         END) AS first_admitted_date,
-              MAX(Ventilator) AS ventilated -- apparently can be 0, 1 or NULL
+              MAX(vent) AS ventilated
             FROM
-              icnarc_view
-            GROUP BY registration_id, hashed_organisation
+              icnarc_raw_view
+            GROUP BY backup_hash, hashed_organisation
             HAVING
 
         MIN(
         CASE
         WHEN
-          COALESCE(date_format(icuadmissiondatetime, '%Y-%m-%d'), '9999-01-01') < COALESCE(date_format(originalicuadmissiondate, '%Y-%m-%d'), '9999-01-01')
+          COALESCE(date_parse(daicu_taicu, '%d/%m/%Y %H:%i'), date_parse('9999', '%Y')) < COALESCE(date_parse(doaicu, '%d/%m/%Y'), date_parse('9999', '%Y'))
         THEN
-          DATE(icuadmissiondatetime)
+          DATE(date_parse(daicu_taicu, '%d/%m/%Y %H:%i'))
         ELSE
-          DATE(originalicuadmissiondate)
-        END) >= DATE('2020-02-01') AND SUM(basicdays_respiratorysupport) + SUM(advanceddays_respiratorysupport) >= 1
+          DATE(date_parse(doaicu, '%d/%m/%Y'))
+        END) >= DATE('2020-02-01') AND SUM(brsd) + SUM(arsd) >= 1
             ;
 
 
@@ -387,7 +386,7 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_population AS
           _TABLE_PREFIX_population.hashed_organisation
         FROM
           _TABLE_PREFIX_population
-          LEFT JOIN _TABLE_PREFIX_icu_date_admitted ON _TABLE_PREFIX_icu_date_admitted.patient_id = _TABLE_PREFIX_population.patient_id
+          LEFT JOIN _TABLE_PREFIX_icu_date_admitted ON _TABLE_PREFIX_icu_date_admitted.nhs_no = _TABLE_PREFIX_population.nhs_no
           -- LEFT JOIN _TABLE_PREFIX_died_date_cpns ON _TABLE_PREFIX_died_date_cpns.patient_id = _TABLE_PREFIX_population.patient_id
           LEFT JOIN _TABLE_PREFIX_died_ons_covid_flag_any ON _TABLE_PREFIX_died_ons_covid_flag_any.nhs_no = _TABLE_PREFIX_population.nhs_no
           LEFT JOIN _TABLE_PREFIX_died_ons_covid_flag_underlying ON _TABLE_PREFIX_died_ons_covid_flag_underlying.nhs_no = _TABLE_PREFIX_population.nhs_no
