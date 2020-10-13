@@ -32,36 +32,36 @@
 
 
 -- -- Query for icu_date_admitted
--- CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_icu_date_admitted AS
---             SELECT
---               registration_id AS patient_id,
---               hashed_organisation,
+CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_icu_date_admitted AS
+            SELECT
+              registration_id AS patient_id,
+              hashed_organisation,
 
---         MIN(
---         CASE
---         WHEN
---           COALESCE(date_format(icuadmissiondatetime, '%Y-%m-%d'), '9999-01-01') < COALESCE(date_format(originalicuadmissiondate, '%Y-%m-%d'), '9999-01-01')
---         THEN
---           DATE(icuadmissiondatetime)
---         ELSE
---           DATE(originalicuadmissiondate)
---         END) AS first_admitted_date,
---               MAX(Ventilator) AS ventilated -- apparently can be 0, 1 or NULL
---             FROM
---               icnarc_view
---             GROUP BY registration_id, hashed_organisation
---             HAVING
+        MIN(
+        CASE
+        WHEN
+          COALESCE(date_format(icuadmissiondatetime, '%Y-%m-%d'), '9999-01-01') < COALESCE(date_format(originalicuadmissiondate, '%Y-%m-%d'), '9999-01-01')
+        THEN
+          DATE(icuadmissiondatetime)
+        ELSE
+          DATE(originalicuadmissiondate)
+        END) AS first_admitted_date,
+              MAX(Ventilator) AS ventilated -- apparently can be 0, 1 or NULL
+            FROM
+              icnarc_view
+            GROUP BY registration_id, hashed_organisation
+            HAVING
 
---         MIN(
---         CASE
---         WHEN
---           COALESCE(date_format(icuadmissiondatetime, '%Y-%m-%d'), '9999-01-01') < COALESCE(date_format(originalicuadmissiondate, '%Y-%m-%d'), '9999-01-01')
---         THEN
---           DATE(icuadmissiondatetime)
---         ELSE
---           DATE(originalicuadmissiondate)
---         END) >= DATE('2020-02-01') AND SUM(basicdays_respiratorysupport) + SUM(advanceddays_respiratorysupport) >= 1
---             ;
+        MIN(
+        CASE
+        WHEN
+          COALESCE(date_format(icuadmissiondatetime, '%Y-%m-%d'), '9999-01-01') < COALESCE(date_format(originalicuadmissiondate, '%Y-%m-%d'), '9999-01-01')
+        THEN
+          DATE(icuadmissiondatetime)
+        ELSE
+          DATE(originalicuadmissiondate)
+        END) >= DATE('2020-02-01') AND SUM(basicdays_respiratorysupport) + SUM(advanceddays_respiratorysupport) >= 1
+            ;
 
 
 -- Query for died_date_cpns
@@ -366,7 +366,7 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_population AS
 
         SELECT
           _TABLE_PREFIX_population.patient_id AS patient_id,
-          -- COALESCE(date_format(_TABLE_PREFIX_icu_date_admitted.first_admitted_date, '%Y-%m-%d'), '') AS icu_date_admitted,
+          COALESCE(date_format(_TABLE_PREFIX_icu_date_admitted.first_admitted_date, '%Y-%m-%d'), '') AS icu_date_admitted,
           -- COALESCE(date_format(_TABLE_PREFIX_died_date_cpns.date_of_death, '%Y-%m-%d'), '') AS died_date_cpns,
           COALESCE(_TABLE_PREFIX_died_ons_covid_flag_any.died, 0) AS died_ons_covid_flag_any,
           COALESCE(_TABLE_PREFIX_died_ons_covid_flag_underlying.died, 0) AS died_ons_covid_flag_underlying,
@@ -387,7 +387,7 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_population AS
           _TABLE_PREFIX_population.hashed_organisation
         FROM
           _TABLE_PREFIX_population
-          -- LEFT JOIN _TABLE_PREFIX_icu_date_admitted ON _TABLE_PREFIX_icu_date_admitted.patient_id = _TABLE_PREFIX_population.patient_id
+          LEFT JOIN _TABLE_PREFIX_icu_date_admitted ON _TABLE_PREFIX_icu_date_admitted.patient_id = _TABLE_PREFIX_population.patient_id
           -- LEFT JOIN _TABLE_PREFIX_died_date_cpns ON _TABLE_PREFIX_died_date_cpns.patient_id = _TABLE_PREFIX_population.patient_id
           LEFT JOIN _TABLE_PREFIX_died_ons_covid_flag_any ON _TABLE_PREFIX_died_ons_covid_flag_any.nhs_no = _TABLE_PREFIX_population.nhs_no
           LEFT JOIN _TABLE_PREFIX_died_ons_covid_flag_underlying ON _TABLE_PREFIX_died_ons_covid_flag_underlying.nhs_no = _TABLE_PREFIX_population.nhs_no
