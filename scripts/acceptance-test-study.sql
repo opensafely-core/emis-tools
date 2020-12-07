@@ -121,7 +121,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_age AS
                  date_diff('year', date_of_birth, DATE('2020-02-01'))
               END AS age
             FROM patient_view
-        WHERE hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             ;
 
 
@@ -136,9 +135,7 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_sex AS
               WHEN 2 THEN 'F'
               ELSE ''
             END AS sex
-          FROM patient_view
-        WHERE hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
-        ;
+          FROM patient_view;
 
 
 -- Query for imd
@@ -149,7 +146,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_imd AS
               imd_rank AS index_of_multiple_deprivation
             FROM
               patient_view
-        WHERE hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             ;
 
 
@@ -161,7 +157,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_rural_urban AS
               rural_urban AS rural_urban_classification
             FROM
               patient_view
-        WHERE hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             ;
 
 
@@ -173,7 +168,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_stp AS
               stp_code AS stp_code
             FROM
               patient_view
-        WHERE hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             ;
 
 
@@ -185,7 +179,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_region AS
               english_region_name AS nuts1_region_name
             FROM
               patient_view
-        WHERE hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             ;
 
 
@@ -205,7 +198,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_bmi AS
         FROM (
            SELECT registration_id, hashed_organisation, date_of_birth
            FROM patient_view
-        WHERE hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
         ) AS patients
         LEFT JOIN (
           SELECT t.registration_id, t.weight, t.effective_date
@@ -214,7 +206,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_bmi AS
             ROW_NUMBER() OVER (PARTITION BY registration_id ORDER BY effective_date DESC) AS rownum
             FROM observation_view
             WHERE snomed_concept_id IN (27113001,162763007) AND effective_date >= DATE('2010-02-01')
-              AND hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
           ) t
           WHERE t.rownum = 1
         ) AS weights
@@ -226,7 +217,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_bmi AS
             ROW_NUMBER() OVER (PARTITION BY registration_id ORDER BY effective_date DESC) AS rownum
             FROM observation_view
             WHERE snomed_concept_id IN (271603002,162755006) AND 1=1
-              AND hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
           ) t
           WHERE t.rownum = 1
         ) AS heights
@@ -238,7 +228,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_bmi AS
           ROW_NUMBER() OVER (PARTITION BY registration_id ORDER BY effective_date DESC) AS rownum
           FROM observation_view
           WHERE snomed_concept_id = 301331008 AND effective_date >= DATE('2010-02-01')
-              AND hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
         ) t
         WHERE t.rownum = 1
         ) AS bmis
@@ -258,7 +247,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_recent_asthma_code AS
             INNER JOIN _TABLE_PREFIX_1_recent_asthma_code
             ON snomed_concept_id = _TABLE_PREFIX_1_recent_asthma_code.code
             WHERE effective_date BETWEEN DATE('2017-02-01') AND DATE('2020-02-01') AND 1 = 1
-              AND observation_view.hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             GROUP BY registration_id, observation_view.hashed_organisation
             ;
 
@@ -274,7 +262,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_asthma_code_ever AS
             INNER JOIN _TABLE_PREFIX_2_asthma_code_ever
             ON snomed_concept_id = _TABLE_PREFIX_2_asthma_code_ever.code
             WHERE 1=1 AND 1 = 1
-              AND observation_view.hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             GROUP BY registration_id, observation_view.hashed_organisation
             ;
 
@@ -290,7 +277,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_copd_code_ever AS
             INNER JOIN _TABLE_PREFIX_3_copd_code_ever
             ON snomed_concept_id = _TABLE_PREFIX_3_copd_code_ever.code
             WHERE 1=1 AND 1 = 1
-              AND observation_view.hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             GROUP BY registration_id, observation_view.hashed_organisation
             ;
 
@@ -306,7 +292,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_prednisolone_last_year AS
             INNER JOIN _TABLE_PREFIX_4_prednisolone_last_year
             ON snomed_concept_id = _TABLE_PREFIX_4_prednisolone_last_year.code
             WHERE effective_date BETWEEN DATE('2019-02-01') AND DATE('2020-02-01') AND 1 = 1
-              AND medication_view.hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             GROUP BY registration_id, medication_view.hashed_organisation
             ;
 
@@ -325,7 +310,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_bp_sys AS
                 CAST(MAX(effective_date) AS date) AS date_measured
             FROM observation_view
             WHERE snomed_concept_id IN (163030003) AND effective_date <= DATE('2020-02-01')
-              AND observation_view.hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             GROUP BY registration_id, hashed_organisation
         ) AS days
         LEFT JOIN observation_view
@@ -334,7 +318,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_bp_sys AS
           AND observation_view.snomed_concept_id IN (163030003)
           AND CAST(observation_view.effective_date AS date) = days.date_measured
         )
-              WHERE observation_view.hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
         GROUP BY days.registration_id, days.hashed_organisation, days.date_measured
         ;
 
@@ -353,7 +336,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_bp_dias AS
                 CAST(MAX(effective_date) AS date) AS date_measured
             FROM observation_view
             WHERE snomed_concept_id IN (163031004) AND effective_date <= DATE('2020-02-01')
-              AND observation_view.hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             GROUP BY registration_id, hashed_organisation
         ) AS days
         LEFT JOIN observation_view
@@ -362,7 +344,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_bp_dias AS
           AND observation_view.snomed_concept_id IN (163031004)
           AND CAST(observation_view.effective_date AS date) = days.date_measured
         )
-              WHERE observation_view.hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
         GROUP BY days.registration_id, days.hashed_organisation, days.date_measured
         ;
 
@@ -377,7 +358,6 @@ CREATE TABLE IF NOT EXISTS _TABLE_PREFIX_population AS
             FROM patient_view
             WHERE registered_date <= DATE('2019-02-01')
               AND (registration_end_date > DATE('2020-02-01') OR registration_end_date IS NULL)
-              AND hashed_organisation = 'BF0053AF88F710A830BCCCD2C66FFA383239FA832C0A5A9DEED8E0551120F757'
             ;
 
 
