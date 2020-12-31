@@ -1,3 +1,4 @@
+from datetime import datetime
 import csv
 import os
 
@@ -44,9 +45,9 @@ if __name__ == "__main__":
         with open("acceptance-test-study.sql") as f:
             sql = f.read()
             sql = sql.replace("TABLE_PREFIX", os.environ["TABLE_PREFIX"])
-            sql = sql.replace("patient_view", "patient_slice")
-            sql = sql.replace("observation_view", "observation_slice")
-            sql = sql.replace("medication_view", "medication_slice")
+            sql = sql.replace("patient_view", "patient_all_orgs_v2")
+            sql = sql.replace("observation_view", "observation_all_orgs_v2")
+            sql = sql.replace("medication_view", "medication_all_orgs_v2")
     conn = get_conn()
     cur = conn.cursor()
     import re
@@ -60,16 +61,19 @@ if __name__ == "__main__":
     statements = sql_without_blank_lines.split(";")[:-1]
     for statement in statements[:-1]:
         print("-" * 80)
+        print(datetime.now())
         for i, line in enumerate(statement.split("\n"), start=1):
             print("{:>3}: {}".format(i, line))
         cur.execute(statement)
         cur.fetchone()
 
     print("-" * 80)
+    print(datetime.now())
     statement = statements[-1]
     for i, line in enumerate(statement.split("\n"), start=1):
         print("{:>3}: {}".format(i, line))
     print("-" * 60)
+    print(datetime.now())
     data = get_data(conn, statement)
     # print(len(data))
     with open("/tmp/data.csv", "w") as csvfile:
