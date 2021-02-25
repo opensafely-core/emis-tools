@@ -5,11 +5,16 @@
 #    pip-compile
 #
 certifi==2020.6.20        # via requests
+cffi==1.14.4              # via cryptography
 chardet==3.0.4            # via requests
 click==7.1.2              # via presto-python-client
+cryptography==3.2.1       # via pyopenssl
 idna==2.10                # via requests
 presto-python-client==0.7.0  # via -r requirements.in
-requests==2.24.0          # via presto-python-client
-six==1.15.0               # via presto-python-client
+pycparser==2.20           # via cffi
+pyopenssl==20.0.0         # via requests-pkcs12
+requests-pkcs12==1.9      # via -r requirements.in
+requests==2.24.0          # via presto-python-client, requests-pkcs12
+six==1.15.0               # via cryptography, presto-python-client, pyopenssl
 tabulate==0.8.7           # via -r requirements.in
 urllib3==1.25.10          # via requests
