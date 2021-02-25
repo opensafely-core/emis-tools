@@ -17,11 +17,21 @@ You can examine table schemas using a dropdown on the left-hand side.
 
 # Accessing production EMISX from command line
 
-First, you need to ssh into a VM that has production access. At the moment, there's only the test one:
+You will want to hop via a jumphost - currently by adding this to your `.ssh/config`:
 
-    ssh <github_handle>@directorvm.testemisnightingale.co.uk
+```
+Host emis
+  HostName directorvm.testemisnightingale.co.uk
+  ProxyJump web2.openprescribing.net
+  ForwardAgent yes
+```
 
+Now you can ssh into a VM that has production access. At the moment, there's only the test one:
+
+    ssh <github_handle>@emis
+    
     # (unless you're seb in which case it's sebbacon)
+
 
 Check you can access *director*:
 
@@ -29,22 +39,21 @@ Check you can access *director*:
     directoraccess.emishealthinsights.co.uk has address 10.0.2.207
     directoraccess.emishealthinsights.co.uk has address 10.0.1.226
     directoraccess.emishealthinsights.co.uk has address 10.0.0.55
+    
+Ensure you have [certificates set up](https://team-manual.thedatalab.org/tech_team_playbooks/accessing-emis-data/)
 
-Ensure you have the latest docker image (with python + scripts packaged):
+To run a query you have to provide a path to a certificate, a certificate password, and a username in your environment:
 
-    docker pull docker.opensafely.org/emis-scripts
+```
+USER=<user_that_you_login_to_emis_web_with>
+PFX_PATH=<path_to_cert_file>
+PFX_PASSWORD_PATH=<path_to_cert_password_file>
+```
 
-Run a command with the `TOKEN` and `USER` set in the environment.
+You can then run the scripts from this repo.  The `run_sql.py` script takes a sql file whose contents should be executed as the first argument and a path to a CSV file to where results should be written as the second argument.  A minimal SQL that just tests the connection is provided at `sql/test.sql` and can be run like this:
 
-For example, the `run_sql.py` command executes `acceptance-test-study.sql` with
-all the views replaced with `_slice` suffixes, and writes a CSV to `/tmp`.
 
-Build and push it with:
+```py
+python run_sql.py sql/test.sql output_file.csv 
 
-    cd scripts/
-    ./build.sh
-
-Then on the server, run it with:
-
-    docker pull docker.opensafely.org/emis-scripts && time docker run --env TOKEN=1RmcPqwGN3yQp2SfDJ8v --env USER=sebastian.bacon -v $(pwd):/tmp docker.opensafely.org/emis-scripts python run_sql.py
 
